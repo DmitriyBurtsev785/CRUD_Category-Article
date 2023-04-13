@@ -28,7 +28,7 @@ class Category:
 
     def patch_category_partial_update(self, id, slug, title):
         """# PATCH /blog/categories/1/ - partial_update"""
-        """Делаем частичное робновление"""
+        """Делаем частичное обновление"""
         request_url = f"{self.base_host}{self.uri}{id}/"
         data = {'slug': slug, 'title': title}
         response = requests.patch(request_url, data)
@@ -37,6 +37,7 @@ class Category:
 
     def get_category_list(self):
         """GET /blog/categories/ - list"""
+        """Выводим перечень категорий"""
         request_url = self.base_host + self.uri
         response = requests.get(request_url)
         pprint(response.json())
@@ -44,6 +45,7 @@ class Category:
 
     def get_category_retrieve(self, id):
         """# GET /blog/categories/1/ - retrieve"""
+        """Выводим конкретную категорию"""
         request_url = f"{self.base_host}{self.uri}{id}/"
         response = requests.get(request_url)
         pprint(response.json())
@@ -51,6 +53,7 @@ class Category:
 
     def delete_category_destroy(self, id):
         """# DELETE /blog/categories/1/ - destroy"""
+        """Удаляем категорию"""
         request_url = f"{self.base_host}{self.uri}{id}/"
         response = requests.delete(request_url)
         print(response.text)
@@ -63,6 +66,7 @@ class Article:
 
 
     def post_article_create(self, slug, title, description, meta_description, meta_keywords, text, category):
+        """# POST /blog/articles/ - create"""
         request_url = f"{self.base_host}/{self.uri}"
         data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
                 'meta_keywords': meta_keywords, 'text': text, 'category': category}
@@ -81,7 +85,7 @@ class Article:
 
 
     def get_article_list(self):
-        """GET /blog/article/ - list"""
+        """GET /blog/articles/ - list"""
         request_url = self.base_host + self.uri
         response = requests.get(request_url)
         pprint(response.json())

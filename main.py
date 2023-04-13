@@ -10,7 +10,7 @@ class Category:
 
     def post_category_create(self, slug, title):
         """# POST /blog/categories/ - create"""
-        """"""
+        """Добавление новых категорий"""
         request_url = f"{self.base_host}{self.uri}"
         data = {'slug': slug, 'title': title}
         response = requests.post(request_url, data)
@@ -19,18 +19,20 @@ class Category:
 
     def put_category_update(self, id, slug, title):
         """# PUT /blog/categories/1/ - update"""
+        """Обновляем категорию"""
         request_url = f"{self.base_host}{self.uri}{id}/"
         data = {'slug': slug, 'title': title}
         response = requests.put(request_url, data)
-        print(response.json())
+        # print(response.json())
 
 
     def patch_category_partial_update(self, id, slug, title):
         """# PATCH /blog/categories/1/ - partial_update"""
+        """Делаем частичное робновление"""
         request_url = f"{self.base_host}{self.uri}{id}/"
         data = {'slug': slug, 'title': title}
         response = requests.patch(request_url, data)
-        print(response.json())
+        # print(response.json())
 
 
     def get_category_list(self):
@@ -91,3 +93,59 @@ class Article:
         response = requests.delete(request_url)
         print(response)
 
+
+
+if __name__ == '__main__':
+    category = Category()
+
+
+
+    # ДОБАВЛЯЕМ КАТЕГОРИЮ
+
+    # category.post_category_create('Frontend', 'Языки программирования для Frontend - разработки')
+    # category.post_category_create('Backend', 'Языки программирования для Backend - разработки')
+    # category.post_category_create('test', 'Категория в разработке')
+
+
+    # ОБНОВЛЯЕМ КАТЕГОРИЮ
+
+    # category.put_category_update(23, 'test 2', 'Категория в разработке 2')
+
+
+    # ОБНОВЛЯЕМ КАТЕГОРИИ (частично)
+
+    # category.patch_category_partial_update(23, 'Test', 'Скоро этот раздел наполнится и информацией')
+
+
+    # СМОТРИМ ПЕРЕЧЕНЬ КАТЕГОРИЙ
+
+    # category.get_category_list()
+
+
+    # СМОТРИМ КОНКРЕТНУЮ КАТЕГОРИЮ
+
+    # category.get_category_retrieve(21)
+
+
+    # УДАЛЯЕМ КАТЕГОРИИ
+
+    # category.delete_category_destroy(23)
+
+    # ДОБАВЛЯЕМ КАТЕГОРИИ
+
+    # ДОБАВЛЯЕМ КАТЕГОРИИ
+
+    # ДОБАВЛЯЕМ КАТЕГОРИИ
+
+    # ДОБАВЛЯЕМ КАТЕГОРИИ
+
+
+
+
+
+
+
+
+
+
+    article = Article()

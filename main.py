@@ -2,62 +2,165 @@ import requests
 import json
 from pprint import pprint
 
+BASE_HOST = 'http://127.0.0.1:8000/'
 
-class Category:
+# pydantic
 
-    base_host = "http://127.0.0.1:8000/"
-    uri = "v1/blog/categories/"
 
-    def post_category_create(self, slug, title):
-        """# POST /blog/categories/ - create"""
-        """Добавление новых категорий"""
-        request_url = f"{self.base_host}{self.uri}"
+def raise_exception_if_not_successful(method):
+
+    def inner(*args, **kwargs):
+        response = method(*args, **kwargs)
+        if str(response.status_code)[0] != '2':
+            raise Exception(response.json())
+        return response
+
+    return inner
+
+
+def return_json(method):
+
+    def inner(*args, **kwargs):
+        response = method(*args, **kwargs)
+        return response.json()
+
+    return inner
+
+
+def is_valid_string(value: str, max_length: int=0, allow_empty: bool=False):
+    if not type(value) is str:
+        return False
+
+    if max_length > 0 and len(value) > max_length:
+        return False
+
+    if not allow_empty and not value:
+        return False
+
+    return True
+
+
+def has_valid_keys_only(data: dict, validkeys: list, all_keys_are_mandatory: bool = False) -> bool:
+    for key in data.keys():
+        if key in validkeys:
+            continue
+        return False
+
+    if all_keys_are_mandatory:
+        for key in validkeys:
+            if not key in data.keys():
+                return False
+
+    return True
+
+
+class CategoryAPI:
+    uri = 'v1/blog/categories/'
+    validkeys = ('slug', 'title')
+    validation_options = {
+        'slug': {
+            'method': is_valid_string,
+            'kwargs': {
+                'max_length': 255,
+                'allow_empty': False
+            }
+        },
+        'title': {
+            'method': is_valid_string,
+            'kwargs': {
+                'max_length': 255,
+                'allow_empty': False
+            }
+        }
+    }
+
+    @staticmethod
+    def is_valid_data(data: dict) -> bool:
+        if not has_valid_keys_only(data, CategoryAPI.validkeys, all_keys_are_mandatory=True):
+            return False
+
+        for key in data.keys():
+            options = CategoryAPI.validation_options[key]
+            if not options.method(data[key], **options['kwargs']):
+                return False
+
+        return True
+
+    @staticmethod
+    def is_valid_patch_data(data: dict) -> bool:
+        if not has_valid_keys_only(data, CategoryAPI.validkeys, all_keys_are_mandatory=False):
+            return False
+
+        for key in data.keys():
+            options = CategoryAPI.validation_options[key]
+            if not options.method(data[key], **options['kwargs']):
+                return False
+
+        return True
+
+    @staticmethod
+    def get_endpoint(id: int|None=None) -> str:
+        endpoint = f'{BASE_HOST}{CategoryAPI.uri}'
+        if id:
+            endpoint += f'{id}/'
+        return endpoint
+
+    @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
+    def create(slug: str, title: str):
+        '''Добавление новой категории'''
+        endpoint = CategoryAPI.get_endpoint()
+
         data = {'slug': slug, 'title': title}
-        response = requests.post(request_url, data)
-        print(response.json())
+        if not CategoryAPI.is_valid_data(data):
+            raise ValueError('Некорректные данные')
 
+        return requests.post(endpoint, data)
 
-    def put_category_update(self, id, slug, title):
-        """# PUT /blog/categories/1/ - update"""
-        """Обновляем категорию"""
-        request_url = f"{self.base_host}{self.uri}{id}/"
-        data = {'slug': slug, 'title': title}
-        response = requests.put(request_url, data)
-        # print(response.json())
+    @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
+    def update(id: int, slug: str, title: str):
+        '''Частичное обновление категории'''
+        endpoint = CategoryAPI.get_endpoint(id)
+        if not CategoryAPI.is_valid_data(data):
+            raise ValueError('Некорректные данные')
 
+        return requests.patch(endpoint, data)
 
-    def patch_category_partial_update(self, id, slug, title):
-        """# PATCH /blog/categories/1/ - partial_update"""
-        """Делаем частичное обновление"""
-        request_url = f"{self.base_host}{self.uri}{id}/"
-        data = {'slug': slug, 'title': title}
-        response = requests.patch(request_url, data)
-        # print(response.json())
+    @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
+    def patch(id: int, data: dict={}):
+        '''Частичное обновление категории'''
+        endpoint = CategoryAPI.get_endpoint(id)
 
+        if not CategoryAPI.is_valid_patch_data(data):
+            raise ValueError('Некорректные данные')
 
-    def get_category_list(self):
-        """GET /blog/categories/ - list"""
-        """Выводим перечень категорий"""
-        request_url = self.base_host + self.uri
-        response = requests.get(request_url)
-        pprint(response.json())
+        response = requests.patch(endpoint, data)
+        return response
 
+    @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
+    def get(id: str=None):
+        '''Получение списка категорий или конкретно категории, если передан id'''
+        endpoint = CategoryAPI.get_endpoint(id)
+        response = requests.get(endpoint)
+        return response
 
-    def get_category_retrieve(self, id):
-        """# GET /blog/categories/1/ - retrieve"""
-        """Выводим конкретную категорию"""
-        request_url = f"{self.base_host}{self.uri}{id}/"
-        response = requests.get(request_url)
-        pprint(response.json())
+    @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
+    def delete(id: int):
+        '''Удаляние категории'''
+        endpoint = CategoryAPI.get_endpoint(id)
+        response = requests.delete(endpoint)
+        return response
 
-
-    def delete_category_destroy(self, id):
-        """# DELETE /blog/categories/1/ - destroy"""
-        """Удаляем категорию"""
-        request_url = f"{self.base_host}{self.uri}{id}/"
-        response = requests.delete(request_url)
-        print(response.text)
-
+# CategoryAPI.delete = raise_exception_if_not_successful(CategoryAPI.delete)
 
 class Article:
 
@@ -74,7 +177,7 @@ class Article:
         # print(response.json())
 
 
-    def patch_article_partial_update(self, slug, title, description, meta_description, meta_keywords, text, id):
+    def patch_article_partial_update(self, id, slug, title, description, meta_description, meta_keywords, text):
         """# PATCH /blog/articles/1/ - partial_update"""
         uri = f"v1/blog/articles/{id}/"
         request_url = self.base_host + uri
@@ -107,8 +210,9 @@ class Article:
 
 
 if __name__ == '__main__':
-    category = Category()
+    # category = Category()
 
+    # Category.create('', '')
 
 
     # ДОБАВЛЯЕМ КАТЕГОРИЮ
@@ -120,12 +224,28 @@ if __name__ == '__main__':
 
     # ОБНОВЛЯЕМ КАТЕГОРИЮ
 
-    # category.put_category_update(23, 'test 2', 'Категория в разработке 2')
+    # category.put_category_update(5, 'test 2', 'Категория в разработке 2')
 
 
     # ОБНОВЛЯЕМ КАТЕГОРИИ (частично)
 
-    # category.patch_category_partial_update(23, 'Test', 'Скоро этот раздел наполнится и информацией')
+    # Category.patch(5, {
+    #     'slug': 'test 555'
+    # })
+
+    try:
+        category = CategoryAPI.patch(10, {'slug': 'Backend', 'title': 'Title' })
+    except Exception as e:
+        print(e)
+        exit('Не удалось создать категорию')
+
+    print(category)
+
+    # CategoryAPI.delete(5)
+
+    # Category.get()
+
+    # category.patch_category_partial_update(5, 'Test', 'Скоро этот раздел наполнится и информацией')
 
 
     # СМОТРИМ ПЕРЕЧЕНЬ КАТЕГОРИЙ

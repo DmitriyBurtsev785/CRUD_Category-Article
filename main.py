@@ -81,7 +81,7 @@ class CategoryAPI:
 
         for key in data.keys():
             options = CategoryAPI.validation_options[key]
-            if not options.method(data[key], **options['kwargs']):
+            if not options['method'](data[key], **options['kwargs']):
                 return False
 
         return True
@@ -93,7 +93,7 @@ class CategoryAPI:
 
         for key in data.keys():
             options = CategoryAPI.validation_options[key]
-            if not options.method(data[key], **options['kwargs']):
+            if not options['method'](data[key], **options['kwargs']):
                 return False
 
         return True
@@ -111,11 +111,9 @@ class CategoryAPI:
     def create(slug: str, title: str):
         '''Добавление новой категории'''
         endpoint = CategoryAPI.get_endpoint()
-
         data = {'slug': slug, 'title': title}
         if not CategoryAPI.is_valid_data(data):
             raise ValueError('Некорректные данные')
-
         return requests.post(endpoint, data)
 
     @staticmethod
@@ -124,9 +122,9 @@ class CategoryAPI:
     def update(id: int, slug: str, title: str):
         '''Частичное обновление категории'''
         endpoint = CategoryAPI.get_endpoint(id)
+        data = {'slug': slug, 'title': title}
         if not CategoryAPI.is_valid_data(data):
             raise ValueError('Некорректные данные')
-
         return requests.patch(endpoint, data)
 
     @staticmethod
@@ -135,10 +133,8 @@ class CategoryAPI:
     def patch(id: int, data: dict={}):
         '''Частичное обновление категории'''
         endpoint = CategoryAPI.get_endpoint(id)
-
         if not CategoryAPI.is_valid_patch_data(data):
             raise ValueError('Некорректные данные')
-
         response = requests.patch(endpoint, data)
         return response
 
@@ -160,56 +156,100 @@ class CategoryAPI:
         response = requests.delete(endpoint)
         return response
 
-# CategoryAPI.delete = raise_exception_if_not_successful(CategoryAPI.delete)
-
-class Article:
-
-    base_host = "http://127.0.0.1:8000/"
-    uri = "v1/blog/articles/"
-
-
-    def post_article_create(self, slug, title, description, meta_description, meta_keywords, text, category):
-        """# POST /blog/articles/ - create"""
-        request_url = f"{self.base_host}/{self.uri}"
-        data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
-                'meta_keywords': meta_keywords, 'text': text, 'category': category}
-        response = requests.post(request_url, data)
-        # print(response.json())
-
-
-    def patch_article_partial_update(self, id, slug, title, description, meta_description, meta_keywords, text):
-        """# PATCH /blog/articles/1/ - partial_update"""
-        uri = f"v1/blog/articles/{id}/"
-        request_url = self.base_host + uri
-        data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
-                'meta_keyword': meta_keywords, 'text': text, 'id': id}
-        response = requests.patch(request_url, data)
-        print(response.json())
-
-
-    def get_article_list(self):
-        """GET /blog/articles/ - list"""
-        request_url = self.base_host + self.uri
-        response = requests.get(request_url)
-        pprint(response.json())
-
-
-    def get_article_retrieve(self, id):
-        """# GET /blog/articles/1/ - retrieve"""
-        request_url = f"{self.base_host}{self.uri}{id}/"
-        response = requests.get(request_url)
-        pprint(response.json())
-
-
-    def delete_article_destroy(self, id):
-        """# DELETE /blog/articles/1/ - destroy"""
-        request_url = f"{self.base_host}{self.uri}{id}/"
-        response = requests.delete(request_url)
-        print(response)
-
 
 
 if __name__ == '__main__':
+
+
+    # CategoryAPI.create('aaa', 'aaa')
+    # CategoryAPI.create('bbb', 'bbb')
+    # CategoryAPI.create('ccc', 'ccc')
+    # CategoryAPI.create('ddd', 'ddd')
+
+    # CategoryAPI.update(25, 'aaa1', 'aaa1')
+
+    # CategoryAPI.patch(25, {'slug': 'aaa', 'title': 'aaa'})
+
+    # CategoryAPI.delete(26)
+
+    # print(CategoryAPI.get())
+    # print(CategoryAPI.get(25))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# CategoryAPI.delete = raise_exception_if_not_successful(CategoryAPI.delete)
+
+# class Article:
+#
+#     base_host = "http://127.0.0.1:8000/"
+#     uri = "v1/blog/articles/"
+#
+#
+#     def post_article_create(self, slug, title, description, meta_description, meta_keywords, text, category):
+#         """# POST /blog/articles/ - create"""
+#         request_url = f"{self.base_host}/{self.uri}"
+#         data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
+#                 'meta_keywords': meta_keywords, 'text': text, 'category': category}
+#         response = requests.post(request_url, data)
+#         # print(response.json())
+#
+#
+#     def patch_article_partial_update(self, id, slug, title, description, meta_description, meta_keywords, text):
+#         """# PATCH /blog/articles/1/ - partial_update"""
+#         uri = f"v1/blog/articles/{id}/"
+#         request_url = self.base_host + uri
+#         data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
+#                 'meta_keyword': meta_keywords, 'text': text, 'id': id}
+#         response = requests.patch(request_url, data)
+#         print(response.json())
+#
+#
+#     def get_article_list(self):
+#         """GET /blog/articles/ - list"""
+#         request_url = self.base_host + self.uri
+#         response = requests.get(request_url)
+#         pprint(response.json())
+#
+#
+#     def get_article_retrieve(self, id):
+#         """# GET /blog/articles/1/ - retrieve"""
+#         request_url = f"{self.base_host}{self.uri}{id}/"
+#         response = requests.get(request_url)
+#         pprint(response.json())
+#
+#
+#     def delete_article_destroy(self, id):
+#         """# DELETE /blog/articles/1/ - destroy"""
+#         request_url = f"{self.base_host}{self.uri}{id}/"
+#         response = requests.delete(request_url)
+#         print(response)
+
+
+
+
     # category = Category()
 
     # Category.create('', '')
@@ -233,13 +273,13 @@ if __name__ == '__main__':
     #     'slug': 'test 555'
     # })
 
-    try:
-        category = CategoryAPI.patch(10, {'slug': 'Backend', 'title': 'Title' })
-    except Exception as e:
-        print(e)
-        exit('Не удалось создать категорию')
-
-    print(category)
+    # try:
+    #     category = CategoryAPI.patch(10, {'slug': 'Backend', 'title': 'Title' })
+    # except Exception as e:
+    #     print(e)
+    #     exit('Не удалось создать категорию')
+    #
+    # print(category)
 
     # CategoryAPI.delete(5)
 
@@ -267,7 +307,7 @@ if __name__ == '__main__':
 
 
 
-    article = Article()
+    # article = Article()
 
     # ДОБАВЛЯЕМ СТАТЬЮ
 

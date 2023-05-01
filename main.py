@@ -116,6 +116,18 @@ class CategoryAPI:
             raise ValueError('Некорректные данные')
         return requests.post(endpoint, data)
 
+
+    @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
+    def put(slug: str, title: str):
+        '''Добавление новой категории'''
+        endpoint = CategoryAPI.get_endpoint()
+        data = {'slug': slug, 'title': title}
+        if not CategoryAPI.is_valid_data(data):
+            raise ValueError('Некорректные данные')
+        return requests.post(endpoint, data)
+
     @staticmethod
     @return_json
     @raise_exception_if_not_successful
@@ -158,6 +170,77 @@ class CategoryAPI:
 
 
 
+class ArticleAPI:
+    uri = 'v1/blog/articles/'
+    validkeys = ('slug', 'title', 'description', 'meta_description', 'meta_keywords', 'text', 'category')
+
+
+    @staticmethod
+    def get_endpoint(id: int|None=None) -> str:
+        endpoint = f'{BASE_HOST}{ArticleAPI.uri}'
+        if id:
+            endpoint += f'{id}/'
+        return endpoint
+
+    @staticmethod
+    def create(slug: str, title: str, description: str, meta_description: str,
+               meta_keywords: str, text: str, category_id: int):
+        """Добавление новой статьи"""
+        endpoint = ArticleAPI.get_endpoint()
+        data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
+                'meta_keywords': meta_keywords, 'text': text, 'category_id': category_id}
+        return requests.post(endpoint, data)
+
+
+    @staticmethod
+    def put(slug: str, title: str, description: str, meta_description: str,
+            meta_keywords: str, text: str, category_id: int):
+        '''Добавление новой категории'''
+        endpoint = ArticleAPI.get_endpoint()
+        data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
+                'meta_keywords': meta_keywords, 'text': text, 'category_id': category_id}
+        # if not CategoryAPI.is_valid_data(data):
+        #     raise ValueError('Некорректные данные')
+        return requests.post(endpoint, data)
+
+
+    @staticmethod
+    def update(slug: str, title: str, description: str, meta_description: str,
+               meta_keywords: str, text: str, id: int):
+        '''Частичное обновление категории'''
+        endpoint = ArticleAPI.get_endpoint(id)
+        data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
+                'meta_keywords': meta_keywords, 'text': text, 'id': id}
+        # if not CategoryAPI.is_valid_data(data):
+        #     raise ValueError('Некорректные данные')
+        return requests.patch(endpoint, data)
+
+
+    @staticmethod
+    def patch(id: int, data: dict={}):
+        '''Частичное обновление категории'''
+        endpoint = ArticleAPI.get_endpoint(id)
+        # if not CategoryAPI.is_valid_patch_data(data):
+        #     raise ValueError('Некорректные данные')
+        response = requests.patch(endpoint, data)
+        return response
+
+
+    @staticmethod
+    def get(id: str=None):
+        '''Получение списка категорий или конкретно категории, если передан id'''
+        endpoint = ArticleAPI.get_endpoint(id)
+        response = requests.get(endpoint)
+        return response
+
+    @staticmethod
+    def delete(id: int):
+        '''Удаляние категории'''
+        endpoint = ArticleAPI.get_endpoint(id)
+        response = requests.delete(endpoint)
+        return response
+
+
 if __name__ == '__main__':
 
 
@@ -173,190 +256,21 @@ if __name__ == '__main__':
     # CategoryAPI.delete(26)
 
     # print(CategoryAPI.get())
+    # pprint(CategoryAPI.get(29))
     # print(CategoryAPI.get(25))
 
+    # ArticleAPI.create('aaa', 'aaa', 'description aaa', 'aaa', 'aaa', 'aaa', 29)
+    # ArticleAPI.create('aaaa', 'aaaa', 'description aaaa', 'aaaa', 'aaaa', 'aaaa', 29)
+    # ArticleAPI.create('a', 'a', 'description a', 'a', 'a', 'a', 29)
+    # ArticleAPI.put('bbb', 'bbb', 'description bbb', 'bbb', 'bbb', 'bbb', 30)
+    # ArticleAPI.put('bbbb', 'bbbb', 'description bbbb', 'bbbb', 'bbbb', 'bbbb', 30)
 
+    # ArticleAPI.update('aaa1', 'aaa1', 'description aaa1', 'aaa1', 'aaa1', 'aaa1', 8)
+    # ArticleAPI.patch(8, {'slug': 'a001', 'title': 'a001', 'description': 'description a001', 'meta_description': 'a001',
+    #             'meta_keywords': 'a001', 'text': 'text a001'})
 
 
+    pprint(ArticleAPI.get().json())
+    # ArticleAPI.delete(11)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# CategoryAPI.delete = raise_exception_if_not_successful(CategoryAPI.delete)
-
-# class Article:
-#
-#     base_host = "http://127.0.0.1:8000/"
-#     uri = "v1/blog/articles/"
-#
-#
-#     def post_article_create(self, slug, title, description, meta_description, meta_keywords, text, category):
-#         """# POST /blog/articles/ - create"""
-#         request_url = f"{self.base_host}/{self.uri}"
-#         data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
-#                 'meta_keywords': meta_keywords, 'text': text, 'category': category}
-#         response = requests.post(request_url, data)
-#         # print(response.json())
-#
-#
-#     def patch_article_partial_update(self, id, slug, title, description, meta_description, meta_keywords, text):
-#         """# PATCH /blog/articles/1/ - partial_update"""
-#         uri = f"v1/blog/articles/{id}/"
-#         request_url = self.base_host + uri
-#         data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
-#                 'meta_keyword': meta_keywords, 'text': text, 'id': id}
-#         response = requests.patch(request_url, data)
-#         print(response.json())
-#
-#
-#     def get_article_list(self):
-#         """GET /blog/articles/ - list"""
-#         request_url = self.base_host + self.uri
-#         response = requests.get(request_url)
-#         pprint(response.json())
-#
-#
-#     def get_article_retrieve(self, id):
-#         """# GET /blog/articles/1/ - retrieve"""
-#         request_url = f"{self.base_host}{self.uri}{id}/"
-#         response = requests.get(request_url)
-#         pprint(response.json())
-#
-#
-#     def delete_article_destroy(self, id):
-#         """# DELETE /blog/articles/1/ - destroy"""
-#         request_url = f"{self.base_host}{self.uri}{id}/"
-#         response = requests.delete(request_url)
-#         print(response)
-
-
-
-
-    # category = Category()
-
-    # Category.create('', '')
-
-
-    # ДОБАВЛЯЕМ КАТЕГОРИЮ
-
-    # category.post_category_create('Frontend', 'Языки программирования для Frontend - разработки')
-    # category.post_category_create('Backend', 'Языки программирования для Backend - разработки')
-    # category.post_category_create('test', 'Категория в разработке')
-
-
-    # ОБНОВЛЯЕМ КАТЕГОРИЮ
-
-    # category.put_category_update(5, 'test 2', 'Категория в разработке 2')
-
-
-    # ОБНОВЛЯЕМ КАТЕГОРИИ (частично)
-
-    # Category.patch(5, {
-    #     'slug': 'test 555'
-    # })
-
-    # try:
-    #     category = CategoryAPI.patch(10, {'slug': 'Backend', 'title': 'Title' })
-    # except Exception as e:
-    #     print(e)
-    #     exit('Не удалось создать категорию')
-    #
-    # print(category)
-
-    # CategoryAPI.delete(5)
-
-    # Category.get()
-
-    # category.patch_category_partial_update(5, 'Test', 'Скоро этот раздел наполнится и информацией')
-
-
-    # СМОТРИМ ПЕРЕЧЕНЬ КАТЕГОРИЙ
-
-    # category.get_category_list()
-
-
-    # СМОТРИМ КОНКРЕТНУЮ КАТЕГОРИЮ
-
-    # category.get_category_retrieve(24)
-
-
-    # УДАЛЯЕМ КАТЕГОРИИ
-
-    # category.delete_category_destroy(111111)
-
-
-
-
-
-
-    # article = Article()
-
-    # ДОБАВЛЯЕМ СТАТЬЮ
-
-    # article.post_article_create('JS', 'JavaScript', 'Полноценный динамический язык программирования',
-    #                                 'JavaScript', 'JavaScript', 'Его разработал Brendan Eich, сооснователь проекта \
-    #                                 Mozilla, Mozilla Foundation и Mozilla Corporation', 21)
-    #
-    # article.post_article_create('Html', 'Html', 'Язык программирования для создания электронных документов',
-    #                                 'Html', 'Html', 'это язык программирования для создания электронных документов, \
-    #                                  называемых страницами, размещаемыми в Интернете. Каждая страница имеет несколько \
-    #                                  подключений к гиперссылкам или ссылкам на другие страницы.', 21)
-    #
-    #
-    # article.post_article_create('Python', 'Python', 'Язык программирования общего назначения',
-    #                                 'Python', 'Python', 'Это высокоуровневый, объектно-ориентированный, \
-    #                                 интерпретируемый язык бэкенда с динамической семантикой.', 22)
-    #
-    #
-    #
-    # article.post_article_create('PHP', 'PHP', 'Один из лучших языков общего назначения для веб-разработки',
-    #                                 'PHP', 'PHP', 'Это скриптовый язык общего назначения, предназначенный\
-    #                                  в основном для веб-разработки.', 22)
-    #
-    #
-    # article.post_article_create('test', 'test', 'Этот блок в разработке',
-    #                                 'test', 'test', 'Информация дополняется', 24)
-
-
-    # ОБНОВЛЯЕМ СТАТЬЮ
-
-
-    # article.patch_article_partial_update('test - обновленный', 'test - обновленный', 'Этот блок в разработке',
-    #                                 'test - обновленный', 'test - обновленный', 'Информация дополняется', 18)
-
-
-
-
-    # СМОТРИМ СПИСОК СТАТЕЙ
-
-
-    # article.get_article_list()
-
-
-    # СМОТРИМ КОНКРЕТНУЮ СТАТЬЮ
-
-    # article.get_article_retrieve(1111111)
-
-
-
-    # УДАДЯЕМ СТАТЬЮ
-
-    # article.delete_article_destroy(1111111111)

@@ -39,6 +39,16 @@ def is_valid_string(value: str, max_length: int=0, allow_empty: bool=False):
 
     return True
 
+def is_valid_int(value: int, allow_empty: bool=False):
+    if not type(value) is int:
+        return False
+
+    if not allow_empty and not value:
+        return False
+
+    return True
+
+
 
 def has_valid_keys_only(data: dict, validkeys: list, all_keys_are_mandatory: bool = False) -> bool:
     for key in data.keys():
@@ -117,16 +127,16 @@ class CategoryAPI:
         return requests.post(endpoint, data)
 
 
-    @staticmethod
-    @return_json
-    @raise_exception_if_not_successful
-    def put(slug: str, title: str):
-        '''Добавление новой категории'''
-        endpoint = CategoryAPI.get_endpoint()
-        data = {'slug': slug, 'title': title}
-        if not CategoryAPI.is_valid_data(data):
-            raise ValueError('Некорректные данные')
-        return requests.post(endpoint, data)
+    # @staticmethod
+    # @return_json
+    # @raise_exception_if_not_successful
+    # def put(slug: str, title: str):
+    #     '''Добавление новой категории'''
+    #     endpoint = CategoryAPI.get_endpoint()
+    #     data = {'slug': slug, 'title': title}
+    #     if not CategoryAPI.is_valid_data(data):
+    #         raise ValueError('Некорректные данные')
+    #     return requests.put(endpoint, data)
 
     @staticmethod
     @return_json
@@ -173,7 +183,81 @@ class CategoryAPI:
 class ArticleAPI:
     uri = 'v1/blog/articles/'
     validkeys = ('slug', 'title', 'description', 'meta_description', 'meta_keywords', 'text', 'category')
+    validation_options = {
+        'slug': {
+            'method': is_valid_string,
+            'kwargs': {
+                'max_length': 255,
+                'allow_empty': False
+            }
+        },
+        'title': {
+            'method': is_valid_string,
+            'kwargs': {
+                'max_length': 255,
+                'allow_empty': False
+            }
+        },
+        'description': {
+            'method': is_valid_string,
+            'kwargs': {
+                'max_length': 255,
+                'allow_empty': False
+            }
+        },
+        'meta_description': {
+            'method': is_valid_string,
+            'kwargs': {
+                'max_length': 255,
+                'allow_empty': False
+            }
+        },
+        'meta_keywords': {
+            'method': is_valid_string,
+            'kwargs': {
+                'max_length': 255,
+                'allow_empty': False
+            }
+        },
+        'text': {
+            'method': is_valid_string,
+            'kwargs': {
+                'allow_empty': False
+            }
+        },
+        'category': {
+            'method': is_valid_int,
+            'kwargs': {
+                'allow_empty': False
+            }
+        }
+    }
 
+
+    @staticmethod
+    def is_valid_data(data: dict) -> bool:
+        if not has_valid_keys_only(data, ArticleAPI.validkeys, all_keys_are_mandatory=True):
+            return False
+
+        for key in data.keys():
+            options = ArticleAPI.validation_options[key]
+            if not options['method'](data[key], **options['kwargs']):
+                return False
+
+        return True
+
+
+    @staticmethod
+    def is_valid_patch_data(data: dict) -> bool:
+        if not has_valid_keys_only(data, ArticleAPI.validkeys, all_keys_are_mandatory=False):
+            return False
+
+        for key in data.keys():
+            options = ArticleAPI.validation_options[key]
+            if not options['method'](data[key], **options['kwargs']):
+                return False
+
+        return True
 
     @staticmethod
     def get_endpoint(id: int|None=None) -> str:
@@ -184,58 +268,66 @@ class ArticleAPI:
 
     @staticmethod
     def create(slug: str, title: str, description: str, meta_description: str,
-               meta_keywords: str, text: str, category_id: int):
+               meta_keywords: str, text: str, category: int):
         """Добавление новой статьи"""
         endpoint = ArticleAPI.get_endpoint()
         data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
-                'meta_keywords': meta_keywords, 'text': text, 'category_id': category_id}
-        return requests.post(endpoint, data)
+                'meta_keywords': meta_keywords, 'text': text, 'category': category}
+        if not ArticleAPI.is_valid_data(data):
+            raise ValueError('Некорректные данные')
+        response = requests.post(endpoint, data)
+        return response.text
+
+
+    # @staticmethod
+    # def put(slug: str, title: str, description: str, meta_description: str,
+    #         meta_keywords: str, text: str, category: int):
+    #     '''Добавление новой статьи'''
+    #     endpoint = ArticleAPI.get_endpoint()
+    #     data = {'id': 10, 'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
+    #             'meta_keywords': meta_keywords, 'text': text, 'category': category}
+    #     # if not CategoryAPI.is_valid_data(data):
+    #     #     raise ValueError('Некорректные данные')
+    #     # return requests.put(endpoint, data)
+    #     response = requests.put(endpoint, data)
+    #
+    #     return response
+
+
 
 
     @staticmethod
-    def put(slug: str, title: str, description: str, meta_description: str,
-            meta_keywords: str, text: str, category_id: int):
-        '''Добавление новой категории'''
-        endpoint = ArticleAPI.get_endpoint()
-        data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
-                'meta_keywords': meta_keywords, 'text': text, 'category_id': category_id}
-        # if not CategoryAPI.is_valid_data(data):
-        #     raise ValueError('Некорректные данные')
-        return requests.post(endpoint, data)
-
-
-    @staticmethod
-    def update(slug: str, title: str, description: str, meta_description: str,
-               meta_keywords: str, text: str, id: int):
-        '''Частичное обновление категории'''
+    def update(id: int, slug: str, title: str, description: str, meta_description: str,
+               meta_keywords: str, text: str, category: int):
+        '''Частичное обновление статьи'''
         endpoint = ArticleAPI.get_endpoint(id)
         data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
-                'meta_keywords': meta_keywords, 'text': text, 'id': id}
-        # if not CategoryAPI.is_valid_data(data):
-        #     raise ValueError('Некорректные данные')
+                'meta_keywords': meta_keywords, 'text': text, 'category': category}
+        if not ArticleAPI.is_valid_data(data):
+            raise ValueError('Некорректные данные')
         return requests.patch(endpoint, data)
 
 
     @staticmethod
     def patch(id: int, data: dict={}):
-        '''Частичное обновление категории'''
+        '''Частичное обновление статьи'''
         endpoint = ArticleAPI.get_endpoint(id)
-        # if not CategoryAPI.is_valid_patch_data(data):
-        #     raise ValueError('Некорректные данные')
+        if not ArticleAPI.is_valid_patch_data(data):
+            raise ValueError('Некорректные данные')
         response = requests.patch(endpoint, data)
         return response
 
 
     @staticmethod
     def get(id: str=None):
-        '''Получение списка категорий или конкретно категории, если передан id'''
+        '''Получение списка статей или конкретно статьи, если передан id'''
         endpoint = ArticleAPI.get_endpoint(id)
         response = requests.get(endpoint)
         return response
 
     @staticmethod
     def delete(id: int):
-        '''Удаляние категории'''
+        '''Удаляние статьи'''
         endpoint = ArticleAPI.get_endpoint(id)
         response = requests.delete(endpoint)
         return response
@@ -248,6 +340,8 @@ if __name__ == '__main__':
     # CategoryAPI.create('bbb', 'bbb')
     # CategoryAPI.create('ccc', 'ccc')
     # CategoryAPI.create('ddd', 'ddd')
+    # CategoryAPI.create('eee', 'eee')
+    # CategoryAPI.put('eee', 'eee')
 
     # CategoryAPI.update(25, 'aaa1', 'aaa1')
 
@@ -255,18 +349,31 @@ if __name__ == '__main__':
 
     # CategoryAPI.delete(26)
 
-    # print(CategoryAPI.get())
+    pprint(CategoryAPI.get())
     # pprint(CategoryAPI.get(29))
     # print(CategoryAPI.get(25))
 
-    # ArticleAPI.create('aaa', 'aaa', 'description aaa', 'aaa', 'aaa', 'aaa', 29)
+    # print(ArticleAPI.create('aaa', 'aaa', 'description aaa', 'aaa', 'aaa', 'aaa', 31))
+    # print(ArticleAPI.create('ccc', 'ccc', 'description ccc', 'ccc', 'ccc', 'ccc', 32))
+    # print(ArticleAPI.create('ddd', 'ddd', 'description ddd', 'ddd', 'ddd', 'ddd', 33))
     # ArticleAPI.create('aaaa', 'aaaa', 'description aaaa', 'aaaa', 'aaaa', 'aaaa', 29)
     # ArticleAPI.create('a', 'a', 'description a', 'a', 'a', 'a', 29)
-    # ArticleAPI.put('bbb', 'bbb', 'description bbb', 'bbb', 'bbb', 'bbb', 30)
-    # ArticleAPI.put('bbbb', 'bbbb', 'description bbbb', 'bbbb', 'bbbb', 'bbbb', 30)
+    # ArticleAPI.create('a777', 'a777', 'description a777', 'a777', 'a777', 'a777', 29)
+    # ArticleAPI.create('a888', 'a888', 'description a888', 'a888', 'a888', 'a888', 29)
+    # ArticleAPI.create('a999', 'a999', 'description a999', 'a999', 'a999', 'a999', 29)
+    # ArticleAPI.put('bbb111', 'bbb111', 'description bbb111', 'bbb111', 'bbb111', 'bbb111', 30)
+    # print(ArticleAPI.put('bbbb5', 'bbbb5', 'description bbbb5', 'bbbb5', 'bbbb5', 'bbbb5', 30))
+    # print(ArticleAPI.put('bbbb5', 'bbbb5', 'description bbbb5', 'bbbb5', 'bbbb5', 'bbbb5', 30))
 
-    # ArticleAPI.update('aaa1', 'aaa1', 'description aaa1', 'aaa1', 'aaa1', 'aaa1', 8)
-    # ArticleAPI.patch(8, {'slug': 'a001', 'title': 'a001', 'description': 'description a001', 'meta_description': 'a001',
+    # ArticleAPI.put(8, {'slug': 'aa001', 'text': 'text a001'})
+
+    # ArticleAPI.put('aaa111', 'aaa1111', 'description aaa111', 'aaa111', 'aaa111', 'aaa111', 10)
+    # ArticleAPI.update('aaa1', 'aaa1', 'description aaa1', 'aaa1', 'aaa1', 'aaa1', 10)
+    # ArticleAPI.update(18, 'ddd1', 'ddd1', 'description ddd1', 'ddd1', 'ddd1', 'ddd1', 33)
+    ArticleAPI.patch(10, {'slug': 'a002', 'title': 'a002', 'description': 'description a002', 'meta_description': 'a002',
+                'meta_keywords': 'a002', 'text': 'text a002', 'category': 29})
+
+    # ArticleAPI.patch(10, {'slug': 'a001', 'title': 'a001', 'description': 'description a001', 'meta_description': 'a001',
     #             'meta_keywords': 'a001', 'text': 'text a001'})
 
 

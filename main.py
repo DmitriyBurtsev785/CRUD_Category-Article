@@ -127,16 +127,17 @@ class CategoryAPI:
         return requests.post(endpoint, data)
 
 
-    # @staticmethod
-    # @return_json
-    # @raise_exception_if_not_successful
-    # def put(slug: str, title: str):
-    #     '''Добавление новой категории'''
-    #     endpoint = CategoryAPI.get_endpoint()
-    #     data = {'slug': slug, 'title': title}
-    #     if not CategoryAPI.is_valid_data(data):
-    #         raise ValueError('Некорректные данные')
-    #     return requests.put(endpoint, data)
+    @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
+    def put(id: int, slug: str, title: str):
+        '''Обновление категории'''
+        endpoint = CategoryAPI.get_endpoint(id)
+        data = {'slug': slug, 'title': title}
+        if not CategoryAPI.is_valid_data(data):
+            raise ValueError('Некорректные данные')
+        return requests.put(endpoint, data)
+
 
     @staticmethod
     @return_json
@@ -267,6 +268,8 @@ class ArticleAPI:
         return endpoint
 
     @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
     def create(slug: str, title: str, description: str, meta_description: str,
                meta_keywords: str, text: str, category: int):
         """Добавление новой статьи"""
@@ -279,24 +282,23 @@ class ArticleAPI:
         return response.text
 
 
-    # @staticmethod
-    # def put(slug: str, title: str, description: str, meta_description: str,
-    #         meta_keywords: str, text: str, category: int):
-    #     '''Добавление новой статьи'''
-    #     endpoint = ArticleAPI.get_endpoint()
-    #     data = {'id': 10, 'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
-    #             'meta_keywords': meta_keywords, 'text': text, 'category': category}
-    #     # if not CategoryAPI.is_valid_data(data):
-    #     #     raise ValueError('Некорректные данные')
-    #     # return requests.put(endpoint, data)
-    #     response = requests.put(endpoint, data)
-    #
-    #     return response
-
-
+    @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
+    def put(id: int, slug: str, title: str, description: str, meta_description: str,
+            meta_keywords: str, text: str, category: int):
+        '''Обновление статьи'''
+        endpoint = ArticleAPI.get_endpoint(id)
+        data = {'slug': slug, 'title': title, 'description': description, 'meta_description': meta_description,
+                'meta_keywords': meta_keywords, 'text': text, 'category': category}
+        if not ArticleAPI.is_valid_data(data):
+            raise ValueError('Некорректные данные')
+        return requests.put(endpoint, data)
 
 
     @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
     def update(id: int, slug: str, title: str, description: str, meta_description: str,
                meta_keywords: str, text: str, category: int):
         '''Частичное обновление статьи'''
@@ -309,6 +311,8 @@ class ArticleAPI:
 
 
     @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
     def patch(id: int, data: dict={}):
         '''Частичное обновление статьи'''
         endpoint = ArticleAPI.get_endpoint(id)
@@ -319,13 +323,18 @@ class ArticleAPI:
 
 
     @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
     def get(id: str=None):
         '''Получение списка статей или конкретно статьи, если передан id'''
         endpoint = ArticleAPI.get_endpoint(id)
         response = requests.get(endpoint)
         return response
 
+
     @staticmethod
+    @return_json
+    @raise_exception_if_not_successful
     def delete(id: int):
         '''Удаляние статьи'''
         endpoint = ArticleAPI.get_endpoint(id)
@@ -342,6 +351,7 @@ if __name__ == '__main__':
     # CategoryAPI.create('ddd', 'ddd')
     # CategoryAPI.create('eee', 'eee')
     # CategoryAPI.put('eee', 'eee')
+    # CategoryAPI.put(34, 'fff1', 'fff')
 
     # CategoryAPI.update(25, 'aaa1', 'aaa1')
 
@@ -349,7 +359,7 @@ if __name__ == '__main__':
 
     # CategoryAPI.delete(26)
 
-    pprint(CategoryAPI.get())
+    # pprint(CategoryAPI.get())
     # pprint(CategoryAPI.get(29))
     # print(CategoryAPI.get(25))
 
@@ -367,17 +377,18 @@ if __name__ == '__main__':
 
     # ArticleAPI.put(8, {'slug': 'aa001', 'text': 'text a001'})
 
-    # ArticleAPI.put('aaa111', 'aaa1111', 'description aaa111', 'aaa111', 'aaa111', 'aaa111', 10)
+    # ArticleAPI.put(10, 'aaa999', 'aaa999', 'description aaa999', 'aaa999', 'aaa999', 'aaa999', 29)
+    # ArticleAPI.put(10, 'aaa000', 'aaa000', 'description aaa000', 'aaa000', 'aaa000', 'aaa000', 29)
     # ArticleAPI.update('aaa1', 'aaa1', 'description aaa1', 'aaa1', 'aaa1', 'aaa1', 10)
     # ArticleAPI.update(18, 'ddd1', 'ddd1', 'description ddd1', 'ddd1', 'ddd1', 'ddd1', 33)
-    ArticleAPI.patch(10, {'slug': 'a002', 'title': 'a002', 'description': 'description a002', 'meta_description': 'a002',
-                'meta_keywords': 'a002', 'text': 'text a002', 'category': 29})
+    # ArticleAPI.patch(10, {'slug': 'a002', 'title': 'a002', 'description': 'description a002', 'meta_description': 'a002',
+    #             'meta_keywords': 'a002', 'text': 'text a002', 'category': 29})
 
     # ArticleAPI.patch(10, {'slug': 'a001', 'title': 'a001', 'description': 'description a001', 'meta_description': 'a001',
     #             'meta_keywords': 'a001', 'text': 'text a001'})
 
 
-    pprint(ArticleAPI.get().json())
+    # pprint(ArticleAPI.get())
     # ArticleAPI.delete(11)
 
 

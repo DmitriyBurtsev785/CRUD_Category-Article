@@ -150,6 +150,7 @@ class CategoryAPI:
             raise ValueError('Некорректные данные')
         return requests.patch(endpoint, data)
 
+
     @staticmethod
     @return_json
     @raise_exception_if_not_successful
@@ -161,6 +162,7 @@ class CategoryAPI:
         response = requests.patch(endpoint, data)
         return response
 
+
     @staticmethod
     @return_json
     @raise_exception_if_not_successful
@@ -170,6 +172,7 @@ class CategoryAPI:
         response = requests.get(endpoint)
         return response
 
+
     @staticmethod
     @return_json
     @raise_exception_if_not_successful
@@ -178,7 +181,6 @@ class CategoryAPI:
         endpoint = CategoryAPI.get_endpoint(id)
         response = requests.delete(endpoint)
         return response
-
 
 
 class ArticleAPI:
@@ -344,51 +346,39 @@ class ArticleAPI:
 
 if __name__ == '__main__':
 
+    # Категории
 
     # CategoryAPI.create('aaa', 'aaa')
     # CategoryAPI.create('bbb', 'bbb')
     # CategoryAPI.create('ccc', 'ccc')
-    # CategoryAPI.create('ddd', 'ddd')
-    # CategoryAPI.create('eee', 'eee')
-    # CategoryAPI.put('eee', 'eee')
-    # CategoryAPI.put(34, 'fff1', 'fff')
 
-    # CategoryAPI.update(25, 'aaa1', 'aaa1')
+    # CategoryAPI.put(ID, 'aaa1', 'aaa1')
 
-    # CategoryAPI.patch(25, {'slug': 'aaa', 'title': 'aaa'})
+    # CategoryAPI.update(ID, 'aaa2', 'aaa2')
 
-    # CategoryAPI.delete(26)
+    # CategoryAPI.patch(ID, {'slug': 'aaaaa', 'title': 'aaaaa'})
+
+    # CategoryAPI.delete(ID)
 
     # pprint(CategoryAPI.get())
-    # pprint(CategoryAPI.get(29))
-    # print(CategoryAPI.get(25))
 
-    # print(ArticleAPI.create('aaa', 'aaa', 'description aaa', 'aaa', 'aaa', 'aaa', 31))
-    # print(ArticleAPI.create('ccc', 'ccc', 'description ccc', 'ccc', 'ccc', 'ccc', 32))
-    # print(ArticleAPI.create('ddd', 'ddd', 'description ddd', 'ddd', 'ddd', 'ddd', 33))
-    # ArticleAPI.create('aaaa', 'aaaa', 'description aaaa', 'aaaa', 'aaaa', 'aaaa', 29)
-    # ArticleAPI.create('a', 'a', 'description a', 'a', 'a', 'a', 29)
-    # ArticleAPI.create('a777', 'a777', 'description a777', 'a777', 'a777', 'a777', 29)
-    # ArticleAPI.create('a888', 'a888', 'description a888', 'a888', 'a888', 'a888', 29)
-    # ArticleAPI.create('a999', 'a999', 'description a999', 'a999', 'a999', 'a999', 29)
-    # ArticleAPI.put('bbb111', 'bbb111', 'description bbb111', 'bbb111', 'bbb111', 'bbb111', 30)
-    # print(ArticleAPI.put('bbbb5', 'bbbb5', 'description bbbb5', 'bbbb5', 'bbbb5', 'bbbb5', 30))
-    # print(ArticleAPI.put('bbbb5', 'bbbb5', 'description bbbb5', 'bbbb5', 'bbbb5', 'bbbb5', 30))
+    # Статьи
 
-    # ArticleAPI.put(8, {'slug': 'aa001', 'text': 'text a001'})
+    # print(ArticleAPI.create('aaa', 'aaa', 'description aaa', 'aaa', 'aaa', 'aaa', CATEGORY_ID))
 
-    # ArticleAPI.put(10, 'aaa999', 'aaa999', 'description aaa999', 'aaa999', 'aaa999', 'aaa999', 29)
-    # ArticleAPI.put(10, 'aaa000', 'aaa000', 'description aaa000', 'aaa000', 'aaa000', 'aaa000', 29)
-    # ArticleAPI.update('aaa1', 'aaa1', 'description aaa1', 'aaa1', 'aaa1', 'aaa1', 10)
-    # ArticleAPI.update(18, 'ddd1', 'ddd1', 'description ddd1', 'ddd1', 'ddd1', 'ddd1', 33)
-    # ArticleAPI.patch(10, {'slug': 'a002', 'title': 'a002', 'description': 'description a002', 'meta_description': 'a002',
-    #             'meta_keywords': 'a002', 'text': 'text a002', 'category': 29})
+    # ArticleAPI.create('aaaa', 'aaaa', 'description aaaa', 'aaaa', 'aaaa', 'aaaa', CATEGORY_ID)
 
-    # ArticleAPI.patch(10, {'slug': 'a001', 'title': 'a001', 'description': 'description a001', 'meta_description': 'a001',
-    #             'meta_keywords': 'a001', 'text': 'text a001'})
+    # ArticleAPI.put(ID, 'aaa999', 'aaa999', 'description aaa999', 'aaa999', 'aaa999', 'aaa999', CATEGORY_ID)
+    # ArticleAPI.put(ID, 'aaa000', 'aaa000', 'description aaa000', 'aaa000', 'aaa000', 'aaa000', CATEGORY_ID)
+
+    # ArticleAPI.update(ID, 'ddd1', 'ddd1', 'description ddd1', 'ddd1', 'ddd1', 'ddd1', CATEGORY_ID)
+
+
+    # ArticleAPI.patch(ID, {'slug': 'a002', 'title': 'a002', 'description': 'description a002', 'meta_description': 'a002',
+    #             'meta_keywords': 'a002', 'text': 'text a002', 'category': CATEGORY_ID})
 
 
     # pprint(ArticleAPI.get())
-    # ArticleAPI.delete(11)
+    # ArticleAPI.delete()
 
 

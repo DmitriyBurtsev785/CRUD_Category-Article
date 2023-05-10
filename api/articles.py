@@ -75,7 +75,7 @@ class ArticleAPI:
     def patch(id: int, data: dict={}):
         '''Частичное обновление статьи'''
         endpoint = ArticleAPI.get_endpoint(id)
-        if not ArticleValidator.is_valid_patch_data(data, all_keys_are_mandatory=False):
+        if not ArticleValidator.is_valid_data(data, all_keys_are_mandatory=False):
             raise ValueError('Некорректные данные')
         response = requests.patch(endpoint, data)
         return response

@@ -7,4 +7,5 @@ def patch_category():
     slug = input('Enter category slug: ')
     title = input('Enter category title: ')
     data = {'slug': slug, 'title': title}
+
     CategoryAPI.patch(id, data)

@@ -2,9 +2,14 @@ import requests
 from api.config import BASE_HOST
 from api.decorators import return_json, raise_exception_if_not_successful
 from validators.categories import CategoryValidator
+# from dataclasses import dataclass
 
-
+# @dataclass
 class CategoryAPI:
+    # id: int
+    # slug: str
+    # title: str
+
     uri = 'v1/blog/categories/'
 
     @staticmethod

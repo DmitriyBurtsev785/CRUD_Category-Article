@@ -1,113 +1,67 @@
 from pprint import pprint
-from api.categories import CategoryAPI
-from api.articles import ArticleAPI
+from working_with_categories import create_category, put_category, update_category, patch_category,\
+    get_category, list_categories, delete_category
+
+
+# from working_with_articles import create_article, patch_article, put_article, update_article,\
+#     get_article, list_articles, delete_article
+# from working_with_articles import create_article
+# import fn
+
+# fn.fn1()
+
+# from menu.articles import create as create_article
+# from menu import articles
+
+# articles.create()
+
+
+# data = {
+#     'id': 1,
+#     'title': 'Title 1',
+#     'slug': 'slug-test'
+# }
+
+# cat: Category = Category(**data)
+
+# print(cat.id)
+# print(cat.slug)
+
 
 # pydantic
 
-def list_categories():
-    categories = CategoryAPI.get()
-    print(f'Cats: {len(categories)}')
-    for cat in categories:
-        print(f'{cat["id"]}. {cat["title"]}')
+# create_article()
+
+from api.categories import CategoryAPI
+
+cat = CategoryAPI.get(1)
+
+print(cat.id)
+print(cat.title, cat.slug)
+
+# response = requests.get('...')
+# cat = Category(**response.json)
 
 
-def create_category():
-    print('--==Creating category==--')
-
-    slug = input('Enter category slug: ')
-    title = input('Enter category title: ')
-
-    CategoryAPI.create(slug, title)
-
-
-def show_category():
-    id = input('Enter category id: ')
-    try:
-        cat = CategoryAPI.get(id)
-    except:
-        print(f'Category {id} not found...')
-        return
-
-    print(cat)
-
-
-def list_articles():
-    articles = ArticleAPI.get()
-
-    print(f'Articles: {len(articles)}')
-    for article in articles:
-        print(f'{article["id"]}. {article["title"]}')
-
-
-def show_article():
-    id = input('Enter article id: ')
-    try:
-        article = ArticleAPI.get(id)
-    except:
-        print(f'Article {id} not found...')
-        return
-
-    print(article)
-
-
-def create_article():
-    try:
-        ArticleAPI.create(
-            'test1',
-            'Test article',
-            'description 123',
-            'meta description 123',
-            'meta keys 123',
-            'short text',
-            1
-        )
-    except Exception as e:
-        print(e)
-
-
-def put_article():
-    try:
-        ArticleAPI.put(
-            4,
-            'test1',
-            'Test article',
-            'description',
-            'meta description',
-            'meta keys',
-            'short text',
-            1
-        )
-    except Exception as e:
-        print(e)
-
-
-def patch_article():
-    pass
-
-
-def delete_article():
-    id = input('Enter article id: ')
-    try:
-        article = ArticleAPI.delete(id)
-    except:
-        print(f'Article {id} not found...')
-        return
-    print('Ok')
-
+exit()
 
 COMMANDS = {
-    'cat': show_category,
-    'cats': list_categories,
-    'create_cat': create_category,
-    'articles': list_articles,
-    'article': show_article,
-    'create_article': create_article,
-    'patch_article': patch_article,
-    'put_article': put_article,
-    'delete_article': delete_article,
+    'create_category': create_category.create_category,
+    'put_category': put_category.put_category,
+    'update_category': update_category.update_category,
+    'patch_category': patch_category.patch_category,
+    'get_category': get_category.get_category,
+    'list_categories': list_categories.list_categories,
+    'delete_category': delete_category.delete_category,
+    'create_article': create_article.create_article,
+    'put_article': put_article.put_article,
+    'update_article': update_article.update_article,
+    'patch_article': patch_article.patch_article,
+    'get_article': get_article.get_article,
+    'list_articles': list_articles.list_articles,
+    'delete_article': delete_article.delete_article,
     'exit': None
 }
-
 
 def show_menu():
     print('--==Menu==--')

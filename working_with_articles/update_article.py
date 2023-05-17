@@ -1,5 +1,6 @@
 from api.articles import ArticleAPI
 
+
 def update_article():
     print('--==Article update==--')
 

@@ -1,8 +1,10 @@
 import requests
-from api.config import BASE_HOST
-from api.decorators import return_json, raise_exception_if_not_successful
+from api.config import BASE_HOST, HEADERS
+from api.decorators import return_json, raise_exception_if_not_successful, return_category
 from validators.categories import CategoryValidator
 # from dataclasses import dataclass
+from api.models import Category
+
 
 # @dataclass
 class CategoryAPI:
@@ -64,12 +66,14 @@ class CategoryAPI:
         return response
 
     @staticmethod
+    # @return_dataclass(dataclass=Category)
+    @return_category
     @return_json
     @raise_exception_if_not_successful
     def get(id: int|None=None):
         '''Получение списка категорий или конкретно категории, если передан id'''
         endpoint = CategoryAPI.get_endpoint(id)
-        response = requests.get(endpoint)
+        response = requests.get(endpoint, headers=HEADERS)
         return response
 
     @staticmethod
